@@ -11,5 +11,5 @@ class AppAssets {
   static const String backgroundApp = 'assets/images/bg_image_app.png';
 
   // Avatars
-  static const String defaultAvatar = 'assets/images/prodile_default.png';
+  static const String defaultAvatar = 'assets/images/profile_default.png';
 }

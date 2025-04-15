@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 Widget profileWidget({String? imageUrl, File? image}) {
   if (image == null) {
     if (imageUrl == null || imageUrl == "") {
-      return Image.asset('assets/profile_default.png', fit: BoxFit.cover);
+      return Image.asset(AppAssets.defaultAvatar, fit: BoxFit.cover);
     } else {
       return CachedNetworkImage(
         imageUrl: imageUrl,

@@ -18,6 +18,7 @@ class InitalProfileSubmitPage extends StatefulWidget {
 class _InitalProfileSubmitPageState extends State<InitalProfileSubmitPage> {
   File? _image;
   final TextEditingController _nameController = TextEditingController();
+
   Future selectedImage() async {
     try {
       final ImagePicker picker = ImagePicker();
@@ -33,6 +34,12 @@ class _InitalProfileSubmitPageState extends State<InitalProfileSubmitPage> {
     } catch (e) {
       toast("some error occured $e");
     }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -112,9 +119,10 @@ class _InitalProfileSubmitPageState extends State<InitalProfileSubmitPage> {
   }
 
   void submitProfileInfo() {
-    Navigator.push(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => HomePage()),
+      (route) => false,
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:chat_application/features/app/theme/style.s.dart';
+import 'package:chat_application/features/user/presentation/pages/inital_profile_submit_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_pin_code_fields/flutter_pin_code_fields.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 class OtpPage extends StatefulWidget {
   const OtpPage({super.key});
@@ -11,10 +12,27 @@ class OtpPage extends StatefulWidget {
 
 class _OtpPageState extends State<OtpPage> {
   final TextEditingController _otpController = TextEditingController();
+  bool _isMounted = true; // Track if widget is mounted
+
+  void _submitSmsCode() {
+    if (_otpController.text.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please enter a valid OTP")));
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const InitalProfileSubmitPage(),
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
+    _isMounted = false;
     super.dispose();
-    _otpController.dispose();
   }
 
   @override
@@ -38,14 +56,38 @@ class _OtpPageState extends State<OtpPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   const Text(
-                    "Enter your OTP for the App Verifytion (so that you will be moved for the further steps to complete)",
+                    "Enter your OTP for the App Verification (so that you will be moved for the further steps to complete)",
                     style: TextStyle(fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 30),
-                  _pinCodeWidget(),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 50),
+                    child: Column(
+                      children: [
+                        PinCodeTextField(
+                          controller: _otpController,
+                          keyboardType: TextInputType.number,
+                          autoDisposeControllers: true,
+                          length: 6,
+                          appContext: context,
+                          onChanged: (value) {},
+                          onCompleted: (pinCode) {
+                            if (_isMounted) {
+                              _submitSmsCode();
+                            }
+                          },
+                          pinTheme: PinTheme(
+                            activeColor: tabColor,
+                            selectedColor: Colors.blueAccent,
+                            inactiveColor: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -60,12 +102,14 @@ class _OtpPageState extends State<OtpPage> {
                   color: tabColor,
                   borderRadius: BorderRadius.circular(5),
                 ),
-                child: const Text(
-                  "Next",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                child: const Center(
+                  child: Text(
+                    "Next",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ),
@@ -74,27 +118,5 @@ class _OtpPageState extends State<OtpPage> {
         ),
       ),
     );
-  }
-
-  Widget _pinCodeWidget() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 50),
-      child: Column(
-        children: <Widget>[
-          PinCodeFields(
-            controller: _otpController,
-
-            length: 6,
-            activeBorderColor: tabColor,
-
-            onComplete: (String pinCode) {},
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _submitSmsCode() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => OtpPage()));
   }
 }

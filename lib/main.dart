@@ -1,8 +1,11 @@
 import 'package:chat_application/features/app/splash/splash_screen.dart';
 import 'package:chat_application/features/app/theme/style.s.dart';
+import 'package:chat_application/routes/generate_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:chat_application/main_injection.dart' as dependencies;
 
-void main() {
+void main() async {
+  await dependencies.init();
   runApp(const MyApp());
 }
 
@@ -21,7 +24,9 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(color: appBarColor),
         dialogTheme: DialogThemeData(backgroundColor: appBarColor),
       ),
-      home: SplashScreen(),
+      onGenerateRoute: GenerateRoutes.router,
+      initialRoute: "/",
+      routes: {"/": (context) => SplashScreen()},
     );
   }
 }

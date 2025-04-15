@@ -47,7 +47,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w400,
-                  color: greyColor.withOpacity(.6),
+                  color: greyColor.withAlpha((255 * 0.6).toInt()),
                 ),
               ),
               const SizedBox(height: 10),
@@ -55,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    AppAssets.logo,
+                    AppAssets.meta,
                     color: Colors.white,
                     width: 35,
                     height: 35,

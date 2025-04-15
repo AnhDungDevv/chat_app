@@ -1,4 +1,9 @@
+import 'package:chat_application/features/app/constants/page_const.dart';
 import 'package:chat_application/features/app/theme/style.s.dart';
+import 'package:chat_application/features/call/presentation/pages/call_history_page.dart';
+import 'package:chat_application/features/chat/presentation/pages/chat_page.dart';
+import 'package:chat_application/features/app/home/contact_page.dart';
+import 'package:chat_application/features/status/presentation/pages/status_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -50,10 +55,18 @@ class _HomePageState extends State<HomePage>
                 iconSize: 28,
                 onSelected: (value) {},
                 itemBuilder:
-                    (context) => <PopupMenuEntry<String>>[
+                    (context) => [
                       PopupMenuItem<String>(
                         value: "Settings",
-                        child: GestureDetector(onTap: () {}),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              PageConst.settingsPage,
+                            );
+                          },
+                          child: const Text("Settings"),
+                        ),
                       ),
                     ],
               ),
@@ -89,11 +102,7 @@ class _HomePageState extends State<HomePage>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          Center(child: Text("Chat page")),
-          Center(child: Text("Status page")),
-          Center(child: Text("Call page")),
-        ],
+        children: [ChatPage(), StatusPage(), CallHistoryPage()],
       ),
       floatingActionButton: switchFloatingActionButtonOnTabIndex(
         _currentTabIndex,
@@ -107,7 +116,12 @@ class _HomePageState extends State<HomePage>
         {
           return FloatingActionButton(
             backgroundColor: tabColor,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ContactPage()),
+              );
+            },
             child: const Icon(Icons.message, color: Colors.white),
           );
         }
@@ -123,7 +137,9 @@ class _HomePageState extends State<HomePage>
         {
           return FloatingActionButton(
             backgroundColor: tabColor,
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, PageConst.callContactsPage);
+            },
             child: const Icon(Icons.add_call, color: Colors.white),
           );
         }
