@@ -2,13 +2,17 @@ import 'dart:io';
 
 import 'package:chat_application/features/app/constants/app_const.dart';
 import 'package:chat_application/features/app/global/widgets/prodile_widget.dart';
-import 'package:chat_application/features/app/home/home_page.dart';
+import 'package:chat_application/features/app/storage/storage_provider.dart';
 import 'package:chat_application/features/app/theme/style.s.dart';
+import 'package:chat_application/features/user/domain/entities/user_entity.dart';
+import 'package:chat_application/features/user/presentation/cubit/credential/credential_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 class InitalProfileSubmitPage extends StatefulWidget {
-  const InitalProfileSubmitPage({super.key});
+  final String phoneNumber;
+  const InitalProfileSubmitPage({super.key, required this.phoneNumber});
 
   @override
   State<InitalProfileSubmitPage> createState() =>
@@ -18,6 +22,7 @@ class InitalProfileSubmitPage extends StatefulWidget {
 class _InitalProfileSubmitPageState extends State<InitalProfileSubmitPage> {
   File? _image;
   final TextEditingController _nameController = TextEditingController();
+  bool _isProfileUpdating = false;
 
   Future selectedImage() async {
     try {
@@ -119,10 +124,34 @@ class _InitalProfileSubmitPageState extends State<InitalProfileSubmitPage> {
   }
 
   void submitProfileInfo() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-      (route) => false,
-    );
+    if (_image != null) {
+      StorageProviderRemoteDataSource.uploadProfileImage(
+        file: _image!,
+        onComplete: (onProfileUpdateComplete) {
+          setState(() {
+            _isProfileUpdating = onProfileUpdateComplete;
+          });
+        },
+      ).then((profileImageUrl) {
+        _profileInfo(profileUrl: profileImageUrl);
+      });
+    } else {
+      _profileInfo(profileUrl: "");
+    }
+  }
+
+  void _profileInfo({String? profileUrl}) {
+    if (_nameController.text.isNotEmpty) {
+      BlocProvider.of<CredentialCubit>(context).submitProfileInfo(
+        user: UserEntity(
+          email: "",
+          username: _nameController.text,
+          phoneNumber: widget.phoneNumber,
+          status: "Hey There! I'm using WhatsApp Clone",
+          isOnline: false,
+          profileUrl: profileUrl,
+        ),
+      );
+    }
   }
 }

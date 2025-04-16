@@ -1,6 +1,7 @@
 import 'package:chat_application/features/app/theme/style.s.dart';
-import 'package:chat_application/features/user/presentation/pages/inital_profile_submit_page.dart';
+import 'package:chat_application/features/user/presentation/cubit/credential/credential_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 class OtpPage extends StatefulWidget {
@@ -12,7 +13,7 @@ class OtpPage extends StatefulWidget {
 
 class _OtpPageState extends State<OtpPage> {
   final TextEditingController _otpController = TextEditingController();
-  bool _isMounted = true; // Track if widget is mounted
+  bool _isMounted = true;
 
   void _submitSmsCode() {
     if (_otpController.text.isEmpty) {
@@ -20,12 +21,11 @@ class _OtpPageState extends State<OtpPage> {
         context,
       ).showSnackBar(const SnackBar(content: Text("Please enter a valid OTP")));
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const InitalProfileSubmitPage(),
-        ),
-      );
+      if (_otpController.text.isNotEmpty) {
+        BlocProvider.of<CredentialCubit>(
+          context,
+        ).submitSms(sms: _otpController.text);
+      }
     }
   }
 

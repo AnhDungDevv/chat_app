@@ -35,17 +35,16 @@ class UserModel extends UserEntity {
          status: status,
        );
 
-  factory UserModel.fromSnapshot(DocumentSnapshot snapshot) {
-    final snap = snapshot.data() as Map<String, dynamic>;
-
+  // Sửa từ 'DocumentSnapshot<Object?>' thành 'Map<String, dynamic>'
+  factory UserModel.fromSnapshot(Map<String, dynamic> snapshot) {
     return UserModel(
-      status: snap['status'],
-      profileUrl: snap['profileUrl'],
-      phoneNumber: snap['phoneNumber'],
-      isOnline: snap['isOnline'],
-      email: snap['email'],
-      username: snap['username'],
-      uid: snap['uid'],
+      username: snapshot['username'],
+      email: snapshot['email'],
+      phoneNumber: snapshot['phoneNumber'],
+      isOnline: snapshot['isOnline'],
+      uid: snapshot['uid'],
+      status: snapshot['status'],
+      profileUrl: snapshot['profileUrl'],
     );
   }
 

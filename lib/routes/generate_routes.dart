@@ -4,6 +4,8 @@ import 'package:chat_application/features/call/presentation/pages/call_contacts_
 import 'package:chat_application/features/app/home/contact_page.dart';
 import 'package:chat_application/features/chat/presentation/pages/single_chat_page.dart';
 import 'package:chat_application/features/status/presentation/pages/my_status_page.dart';
+import 'package:chat_application/features/user/domain/entities/user_entity.dart';
+import 'package:chat_application/features/user/presentation/pages/edit_prodile_page.dart';
 import 'package:flutter/material.dart';
 
 class GenerateRoutes {
@@ -19,7 +21,21 @@ class GenerateRoutes {
       case PageConst.callContactsPage:
         return materialPageBuilder(const CallContactsPage());
       case PageConst.settingsPage:
-        return materialPageBuilder(const SettingsPage());
+        {
+          if (args is String) {
+            return materialPageBuilder(SettingsPage(uid: args));
+          } else {
+            return materialPageBuilder(const ErrorPage());
+          }
+        }
+      case PageConst.editProfilePage:
+        {
+          if (args is UserEntity) {
+            return materialPageBuilder(EditProfilePage(currentUser: args));
+          } else {
+            return materialPageBuilder(const ErrorPage());
+          }
+        }
       case PageConst.singleChatPage:
         return materialPageBuilder(const SingleChatPage());
 
@@ -36,6 +52,17 @@ class GenerateRoutes {
     return MaterialPageRoute(
       builder:
           (_) => const Scaffold(body: Center(child: Text("Page not found"))),
+    );
+  }
+}
+
+class ErrorPage extends StatelessWidget {
+  const ErrorPage({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Error page")),
+      body: Center(child: Text('Error Page')),
     );
   }
 }

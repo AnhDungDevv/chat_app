@@ -18,15 +18,16 @@ import 'package:chat_application/features/user/presentation/cubit/get_device_num
 import 'package:chat_application/features/user/presentation/cubit/get_single/get_single_user_cubit.dart';
 import 'package:chat_application/features/user/presentation/cubit/user/user_cubit.dart';
 import 'package:chat_application/main_injection.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> userInjection() async {
   // REPOSITORY & SOURCE ----------
-  sl.registerLazySingleton<UserRepository>(
-    () => UserRepositoryImpl(remoteDataSource: sl.call()),
+  sl.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSourceImpl(supabase: sl<SupabaseClient>()),
   );
 
-  sl.registerLazySingleton<UserRemoteDataSource>(
-    () => UserRemoteDataSourceImpl(auth: sl.call(), fireStore: sl.call()),
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(remoteDataSource: sl.call()),
   );
 
   //  USECASE ---------------------

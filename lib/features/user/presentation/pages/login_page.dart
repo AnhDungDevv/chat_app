@@ -1,8 +1,16 @@
+import 'package:chat_application/features/app/constants/app_const.dart';
+import 'package:chat_application/features/app/home/home_page.dart';
 import 'package:chat_application/features/app/theme/style.s.dart';
+import 'package:chat_application/features/user/presentation/cubit/auth/auth_cubit.dart';
+import 'package:chat_application/features/user/presentation/cubit/auth/auth_state.dart';
+import 'package:chat_application/features/user/presentation/cubit/credential/credential_cubit.dart';
+import 'package:chat_application/features/user/presentation/cubit/credential/credential_state.dart';
+import 'package:chat_application/features/user/presentation/pages/inital_profile_submit_page.dart';
 import 'package:chat_application/features/user/presentation/pages/otp_page.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -27,6 +35,43 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocConsumer<CredentialCubit, CredentialState>(
+      listener: (BuildContext context, CredentialState credentialListener) {
+        if (credentialListener is CredentialSuccess) {
+          BlocProvider.of<AuthCubit>(context).loggeddIn();
+        }
+        if (credentialListener is CredentialFailure) {
+          toast(" Something error");
+        }
+      },
+      builder: (context, credentialState) {
+        if (credentialState is CredentialLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: tabColor),
+          );
+        }
+        if (credentialState is CredentialPhoneAuthSmsReceived) {
+          return const OtpPage();
+        }
+        if (credentialState is CredentialPhoneAuthProfileInfo) {
+          return InitalProfileSubmitPage(phoneNumber: _phoneNumber);
+        }
+        if (credentialState is CredentialSuccess) {
+          return BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, authState) {
+              if (authState is Authenticated) {
+                return HomePage(uid: authState.uid);
+              }
+              return _bodyWidget();
+            },
+          );
+        }
+        return _bodyWidget();
+      },
+    );
+  }
+
+  _bodyWidget() {
     return Scaffold(
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -171,6 +216,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _submitVerifyPhoneNumber() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => OtpPage()));
+    if (_phoneController.text.isNotEmpty) {
+      _phoneNumber = "+$_countryCode${_phoneController.text}";
+      BlocProvider.of<CredentialCubit>(
+        context,
+      ).submitVerifyPhone(phoneNumber: _phoneController.text);
+    } else {
+      toast("Enter your phone number");
+    }
   }
 }
