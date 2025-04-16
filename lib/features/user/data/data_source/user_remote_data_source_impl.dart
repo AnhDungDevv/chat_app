@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:chat_application/features/user/data/data_source/user_remote_data_source.dart';
 import 'package:chat_application/features/user/data/models/user_model.dart';
@@ -15,30 +14,23 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   @override
   Future<void> createUser(UserEntity user) async {
     final uid = await getCurrentUID();
+
     final newUser =
         UserModel(
-          email: user.email,
           uid: uid,
-          isOnline: user.isOnline,
-          phoneNumber: user.phoneNumber,
           username: user.username,
-          profileUrl: user.profileUrl,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          isOnline: user.isOnline,
           status: user.status,
+          profileUrl: user.profileUrl,
         ).toDocument();
 
+    final newUserWithUid = {...newUser, 'uid': uid};
     try {
-      final response = await supabase
-          .from('users')
-          .upsert(newUser)
-          .eq('uid', uid);
-
-      if (response.error != null) {
-        throw Exception(
-          "Error occurred while creating/updating user: ${response.error!.message}",
-        );
-      }
+      await supabase.from('users').insert(newUserWithUid);
     } catch (e) {
-      throw Exception("Error occur while creating user");
+      throw Exception("Error occur while creating user $e");
     }
   }
 

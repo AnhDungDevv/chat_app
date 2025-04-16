@@ -32,9 +32,13 @@ class CredentialCubit extends Cubit<CredentialState> {
     try {
       await signInWithPhoneNumberUseCase(sms);
       emit(CredentialPhoneAuthProfileInfo());
-    } on SocketException catch (_) {
+    } on SocketException catch (e) {
+      print("errror : $e");
+
       emit(CredentialFailure());
     } catch (e) {
+      print("errror : $e");
+
       emit(CredentialFailure());
     }
   }
@@ -43,9 +47,13 @@ class CredentialCubit extends Cubit<CredentialState> {
     try {
       await createUserUseCase(user);
       emit(CredentialSuccess());
-    } on SocketException catch (_) {
+    } on SocketException catch (e) {
+      print("errror : $e");
+
       emit(CredentialFailure());
     } catch (e) {
+      print("errror : $e");
+
       emit(CredentialFailure());
     }
   }

@@ -2,6 +2,7 @@ import 'package:chat_application/features/user/domain/entities/user_entity.dart'
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel extends UserEntity {
+  final String? uid;
   @override
   final String? username;
   @override
@@ -10,8 +11,6 @@ class UserModel extends UserEntity {
   final String? phoneNumber;
   @override
   final bool? isOnline;
-  @override
-  final String? uid;
   @override
   final String? status;
   @override
@@ -35,24 +34,23 @@ class UserModel extends UserEntity {
          status: status,
        );
 
-  // Sửa từ 'DocumentSnapshot<Object?>' thành 'Map<String, dynamic>'
   factory UserModel.fromSnapshot(Map<String, dynamic> snapshot) {
     return UserModel(
       username: snapshot['username'],
       email: snapshot['email'],
-      phoneNumber: snapshot['phoneNumber'],
-      isOnline: snapshot['isOnline'],
+      phoneNumber: snapshot['phone_number'],
+      isOnline: snapshot['is_online'],
       uid: snapshot['uid'],
       status: snapshot['status'],
-      profileUrl: snapshot['profileUrl'],
+      profileUrl: snapshot['profile_url'],
     );
   }
 
   Map<String, dynamic> toDocument() => {
     "status": status,
-    "profileUrl": profileUrl,
-    "phoneNumber": phoneNumber,
-    "isOnline": isOnline,
+    "profile_url": profileUrl,
+    "phone_number": phoneNumber,
+    "is_online": isOnline,
     "email": email,
     "username": username,
     "uid": uid,
