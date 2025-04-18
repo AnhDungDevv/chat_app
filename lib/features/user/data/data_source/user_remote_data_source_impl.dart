@@ -78,7 +78,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     return supabase
         .from('users')
         .select()
-        .eq('uid', uid)
+        .eq('user_id', uid)
         .single()
         .asStream()
         .map((data) {
@@ -122,7 +122,10 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     if (fullData.isEmpty) return;
 
     try {
-      await supabase.from('users').update(fullData).eq('uid', fullData['uid']);
+      await supabase
+          .from('users')
+          .update(fullData)
+          .eq('user_id', fullData['user_id']);
     } catch (e) {
       throw Exception("Error occurred while updating user");
     }
