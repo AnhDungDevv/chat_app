@@ -1,12 +1,14 @@
 import 'package:chat_application/features/app/constants/app_assets.dart';
 import 'package:chat_application/features/app/theme/style.s.dart';
+import 'package:chat_application/features/chat/domain/entities/message_entity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:swipe_to/swipe_to.dart';
 
 class SingleChatPage extends StatefulWidget {
-  const SingleChatPage({super.key});
+  final MessageEntity message;
+  const SingleChatPage({super.key, required this.message});
 
   @override
   State<SingleChatPage> createState() => _SingleChatPageState();
@@ -28,9 +30,9 @@ class _SingleChatPageState extends State<SingleChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Column(
+        title: Column(
           children: [
-            Text("Username"),
+            Text("${widget.message.recipientName}"),
             Text(
               "Online",
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),

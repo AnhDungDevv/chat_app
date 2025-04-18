@@ -1,8 +1,7 @@
 import 'package:chat_application/features/user/domain/entities/user_entity.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel extends UserEntity {
-  final String? uid;
+  final String? userId;
   @override
   final String? username;
   @override
@@ -21,38 +20,49 @@ class UserModel extends UserEntity {
     this.email,
     this.phoneNumber,
     this.isOnline,
-    this.uid,
+    this.userId,
     this.status,
     this.profileUrl,
   }) : super(
          username: username,
          email: email,
-         uid: uid,
+         userId: userId,
          profileUrl: profileUrl,
          phoneNumber: phoneNumber,
          isOnline: isOnline,
          status: status,
        );
-
-  factory UserModel.fromSnapshot(Map<String, dynamic> snapshot) {
+  factory UserModel.fromEntity(UserEntity entity) {
     return UserModel(
-      username: snapshot['username'],
-      email: snapshot['email'],
-      phoneNumber: snapshot['phone_number'],
-      isOnline: snapshot['is_online'],
-      uid: snapshot['uid'],
-      status: snapshot['status'],
-      profileUrl: snapshot['profile_url'],
+      userId: entity.userId,
+      username: entity.username,
+      email: entity.email,
+      phoneNumber: entity.phoneNumber,
+      isOnline: entity.isOnline,
+      status: entity.status,
+      profileUrl: entity.profileUrl,
     );
   }
 
-  Map<String, dynamic> toDocument() => {
+  factory UserModel.fromJson(Map<String, dynamic> json) {
+    return UserModel(
+      username: json['username'],
+      email: json['email'],
+      phoneNumber: json['phone_number'],
+      isOnline: json['is_online'],
+      userId: json['user_id'],
+      status: json['status'],
+      profileUrl: json['profile_url'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
     "status": status,
     "profile_url": profileUrl,
     "phone_number": phoneNumber,
     "is_online": isOnline,
     "email": email,
     "username": username,
-    "uid": uid,
+    "user_id": userId,
   };
 }

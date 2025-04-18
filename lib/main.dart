@@ -1,6 +1,8 @@
 import 'package:chat_application/features/app/home/home_page.dart';
 import 'package:chat_application/features/app/splash/splash_screen.dart';
 import 'package:chat_application/features/app/theme/style.s.dart';
+import 'package:chat_application/features/chat/presentation/cubit/chat/chat_cubit.dart';
+import 'package:chat_application/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:chat_application/features/user/presentation/cubit/auth/auth_cubit.dart';
 import 'package:chat_application/features/user/presentation/cubit/auth/auth_state.dart';
 import 'package:chat_application/features/user/presentation/cubit/credential/credential_cubit.dart';
@@ -45,6 +47,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => dependencies.sl<GetDeviceNumberCubit>(),
         ),
+        BlocProvider(create: (context) => dependencies.sl<ChatCubit>()),
+        BlocProvider(create: (context) => dependencies.sl<MessageCubit>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

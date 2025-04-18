@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage>
                             Navigator.pushNamed(
                               context,
                               PageConst.settingsPage,
-                              arguments: widget.uid
+                              arguments: widget.uid,
                             );
                           },
                           child: const Text("Settings"),
@@ -104,7 +104,7 @@ class _HomePageState extends State<HomePage>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [ChatPage(), StatusPage(), CallHistoryPage()],
+        children: [ChatPage(uid: widget.uid), StatusPage(), CallHistoryPage()],
       ),
       floatingActionButton: switchFloatingActionButtonOnTabIndex(
         _currentTabIndex,
@@ -121,7 +121,9 @@ class _HomePageState extends State<HomePage>
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ContactPage()),
+                MaterialPageRoute(
+                  builder: (context) => ContactPage(uid: widget.uid),
+                ),
               );
             },
             child: const Icon(Icons.message, color: Colors.white),

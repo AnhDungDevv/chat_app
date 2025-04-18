@@ -24,11 +24,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _isProfileUpdating = false;
   File? _image;
 
-  final ImagePicker _picker = ImagePicker();
-
   Future selectImage() async {
     try {
-      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      final ImagePicker picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
       setState(() {
         if (pickedFile != null) {
           _image = File(pickedFile.path);
@@ -70,7 +70,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   Container(
                     width: 150,
                     height: 150,
-
                     margin: const EdgeInsets.symmetric(
                       horizontal: 10,
                       vertical: 20,
@@ -84,7 +83,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     bottom: 15,
                     right: 15,
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: selectImage,
                       child: Container(
                         width: 50,
                         height: 50,
@@ -101,61 +100,59 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  _profileItem(
-                    controller: _usernameController,
-                    title: "Name",
-                    description: "Enter username",
-                    icon: Icons.person,
-                    onTap: () {},
-                  ),
-                  _profileItem(
-                    controller: _aboutController,
-                    title: "About",
-                    description: "Hey there I'm using WhatsApp",
-                    icon: Icons.info_outline,
-                    onTap: () {},
-                  ),
-                  _settingsItemWidget(
-                    title: "Phone",
-                    description: "${widget.currentUser.phoneNumber}",
-                    icon: Icons.phone,
-                    onTap: () {},
-                  ),
-                  const SizedBox(height: 40),
-                  GestureDetector(
-                    onTap: selectImage,
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 20),
-                      width: 120,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: tabColor,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child:
-                          _isProfileUpdating == true
-                              ? const Center(
-                                child: SizedBox(
-                                  width: 25,
-                                  height: 25,
-                                  child: CircularProgressIndicator(
-                                    color: whiteColor,
-                                  ),
-                                ),
-                              )
-                              : const Center(
-                                child: Text(
-                                  "Save",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                    ),
-                  ),
                 ],
+              ),
+            ),
+            _profileItem(
+              controller: _usernameController,
+              title: "Name",
+              description: "Enter username",
+              icon: Icons.person,
+              onTap: () {},
+            ),
+            _profileItem(
+              controller: _aboutController,
+              title: "About",
+              description: "Hey there I'm using WhatsApp",
+              icon: Icons.info_outline,
+              onTap: () {},
+            ),
+            _settingsItemWidget(
+              title: "Phone",
+              description: "${widget.currentUser.phoneNumber}",
+              icon: Icons.phone,
+              onTap: () {},
+            ),
+            const SizedBox(height: 40),
+            GestureDetector(
+              onTap: submitProfileInfo,
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                width: 120,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: tabColor,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child:
+                    _isProfileUpdating == true
+                        ? const Center(
+                          child: SizedBox(
+                            width: 25,
+                            height: 25,
+                            child: CircularProgressIndicator(color: whiteColor),
+                          ),
+                        )
+                        : const Center(
+                          child: Text(
+                            "Save",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
               ),
             ),
           ],
@@ -275,6 +272,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           )
           .then((value) {
             toast("Profile updated");
+            
           });
     }
   }

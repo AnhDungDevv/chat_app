@@ -19,7 +19,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
-    print("uuuid ${widget.uid}");
     BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
     super.initState();
   }
@@ -43,6 +42,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           Navigator.pushNamed(
                             context,
                             PageConst.editProfilePage,
+                            arguments: singleUser,
                           );
                         },
                         child: SizedBox(

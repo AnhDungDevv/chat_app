@@ -11,7 +11,7 @@ class UserCubit extends Cubit<UserState> {
     : super(UserInitial());
   Future<void> getAllUsers() async {
     emit(UserLoading());
-    final streamResponse = getAllUsersUseCase.call();
+    final streamResponse = getAllUsersUseCase();
     streamResponse.listen((users) {
       emit(UserLoaded(users: users));
     });
@@ -19,7 +19,7 @@ class UserCubit extends Cubit<UserState> {
 
   Future<void> updateUser({required UserEntity user}) async {
     try {
-      await updateUserUseCase.call(user);
+      await updateUserUseCase(user);
     } catch (e) {
       emit(UserFailure());
     }

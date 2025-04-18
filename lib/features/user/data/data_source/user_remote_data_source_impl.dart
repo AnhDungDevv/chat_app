@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:chat_application/features/user/data/data_source/user_remote_data_source.dart';
 import 'package:chat_application/features/user/data/models/user_model.dart';
-import 'package:chat_application/features/user/domain/entities/contact-entity.dart';
+import 'package:chat_application/features/user/domain/entities/contact_entity.dart';
 import 'package:chat_application/features/user/domain/entities/user_entity.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 
@@ -17,16 +17,16 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
     final newUser =
         UserModel(
-          uid: uid,
+          userId: uid,
           username: user.username,
           email: user.email,
           phoneNumber: user.phoneNumber,
           isOnline: user.isOnline,
           status: user.status,
           profileUrl: user.profileUrl,
-        ).toDocument();
+        ).toJson();
 
-    final newUserWithUid = {...newUser, 'uid': uid};
+    final newUserWithUid = {...newUser, 'user_id': uid};
     try {
       await supabase.from('users').insert(newUserWithUid);
     } catch (e) {
@@ -38,8 +38,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   Stream<List<UserEntity>> getAllUsers() {
     return supabase
         .from('users')
-        .stream(primaryKey: [])
-        .map((data) => data.map((e) => UserModel.fromSnapshot(e)).toList());
+        .stream(primaryKey: ['user_id'])
+        .map((data) => data.map((e) => UserModel.fromJson(e)).toList());
   }
 
   @override
@@ -82,7 +82,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         .single()
         .asStream()
         .map((data) {
-          return [UserModel.fromSnapshot(data)];
+          return [UserModel.fromJson(data)];
         });
   }
 
@@ -116,30 +116,13 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<void> updateUser(UserEntity user) async {
-    Map<String, dynamic> userInfo = {};
+    final userModel = UserModel.fromEntity(user);
+    final fullData = userModel.toJson();
 
-    if (user.username != "" && user.username != null) {
-      userInfo['username'] = user.username;
-    }
-    if (user.status != "" && user.status != null) {
-      userInfo['status'] = user.status;
-    }
-    if (user.profileUrl != "" && user.profileUrl != null) {
-      userInfo['profileUrl'] = user.profileUrl;
-    }
-    if (user.isOnline != null) userInfo['isOnline'] = user.isOnline;
+    if (fullData.isEmpty) return;
 
     try {
-      final response = await supabase
-          .from('users')
-          .update(userInfo)
-          .eq('uid', user.uid as Object);
-
-      if (response.error != null) {
-        throw Exception(
-          "Error occurred while updating user: ${response.error!.message}",
-        );
-      }
+      await supabase.from('users').update(fullData).eq('uid', fullData['uid']);
     } catch (e) {
       throw Exception("Error occurred while updating user");
     }

@@ -2,6 +2,7 @@ import 'package:chat_application/features/app/constants/page_const.dart';
 import 'package:chat_application/features/app/settings/settings_page.dart';
 import 'package:chat_application/features/call/presentation/pages/call_contacts_page.dart';
 import 'package:chat_application/features/app/home/contact_page.dart';
+import 'package:chat_application/features/chat/domain/entities/message_entity.dart';
 import 'package:chat_application/features/chat/presentation/pages/single_chat_page.dart';
 import 'package:chat_application/features/status/presentation/pages/my_status_page.dart';
 import 'package:chat_application/features/user/domain/entities/user_entity.dart';
@@ -15,7 +16,13 @@ class GenerateRoutes {
 
     switch (name) {
       case PageConst.contactUsersPage:
-        return materialPageBuilder(const ContactPage());
+        {
+          if (args is String) {
+            return materialPageBuilder(ContactPage(uid: args));
+          } else {
+            return materialPageBuilder(const ErrorPage());
+          }
+        }
       case PageConst.myStatusPage:
         return materialPageBuilder(const MyStatusPage());
       case PageConst.callContactsPage:
@@ -37,7 +44,13 @@ class GenerateRoutes {
           }
         }
       case PageConst.singleChatPage:
-        return materialPageBuilder(const SingleChatPage());
+        {
+          if (args is MessageEntity) {
+            return materialPageBuilder(SingleChatPage(message: args));
+          } else {
+            return materialPageBuilder(const ErrorPage());
+          }
+        }
 
       default:
         return _errorRoute();
