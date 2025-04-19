@@ -47,6 +47,8 @@
 	<true/>
 	<key>NSContactsUsageDescription</key>
 	<string>Ứng dụng cần quyền truy cập danh bạ để hiển thị thông tin liên hệ của bạn.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to the microphone for voice messages.</string>
 
 </dict>
 </plist>

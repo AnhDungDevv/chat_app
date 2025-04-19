@@ -1,7 +1,7 @@
 import 'package:chat_application/features/chat/domain/entities/chat_entity.dart';
 
 class ChatModel extends ChatEntity {
-  final String? id;
+  final String? chatId;
   final String? senderId;
   final String? recipientId;
   final String? senderName;
@@ -13,7 +13,7 @@ class ChatModel extends ChatEntity {
   final num? totalUnReadMessages;
 
   const ChatModel({
-    this.id,
+    this.chatId,
     this.senderId,
     this.recipientId,
     this.senderName,
@@ -24,7 +24,7 @@ class ChatModel extends ChatEntity {
     this.recipientProfile,
     this.totalUnReadMessages,
   }) : super(
-         id: id,
+         chatId: chatId,
          senderId: senderId,
          recipientId: recipientId,
          senderName: senderName,
@@ -38,8 +38,8 @@ class ChatModel extends ChatEntity {
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     return ChatModel(
-      id: json['id'] as String?,
-      senderId: json['senderId'] as String?,
+      chatId: json['chat_id'] as String?,
+      senderId: json['sender_id'] as String?,
       senderName: json['sender_name'] as String?,
       senderProfile: json['sender_profile'] as String?,
       recipientId: json['recipient_id'] as String?,
@@ -59,7 +59,6 @@ class ChatModel extends ChatEntity {
   }
 
   Map<String, dynamic> toJson() => {
-    'chat_id': id,
     'sender_id': senderId,
     'sender_name': senderName,
     'sender_profile': senderProfile,
@@ -72,7 +71,7 @@ class ChatModel extends ChatEntity {
   };
 
   ChatEntity toEntity() => ChatEntity(
-    id: id,
+    chatId: chatId,
     senderId: senderId,
     senderName: senderName,
     senderProfile: senderProfile,

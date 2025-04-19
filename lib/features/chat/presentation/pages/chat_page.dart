@@ -20,10 +20,10 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
-    BlocProvider.of<ChatCubit>(
-      context,
-    ).getMyChats(chat: ChatEntity(senderId: widget.uid));
     super.initState();
+    context.read<ChatCubit>().getMyChats(
+      chat: ChatEntity(senderId: widget.uid),
+    );
   }
 
   @override

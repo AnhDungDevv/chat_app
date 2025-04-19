@@ -7,7 +7,6 @@ import 'package:chat_application/features/chat/data/source/remote/chat_remote_da
 import 'package:chat_application/features/chat/domain/entities/chat_entity.dart';
 import 'package:chat_application/features/chat/domain/entities/message_entity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   final SupabaseClient supabaseClient;
@@ -15,7 +14,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   @override
   Future<void> deleteChat(ChatEntity chat) async {
     try {
-      await supabaseClient.from('chats').delete().eq('id', chat.id as String);
+      await supabaseClient
+          .from('chats')
+          .delete()
+          .eq('chat_id', chat.chatId as String);
     } catch (e) {
       print("Error occurred while delete chat: $e");
     }
@@ -23,11 +25,14 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
   @override
   Future<void> deleteMessage(MessageEntity message) async {
+    print("message delete ${message.messageId}");
     try {
       await supabaseClient
           .from('messages')
           .delete()
-          .eq('id', message.messageId as String);
+          .eq('message_id', message.messageId as String)
+          .eq('sender_id', message.senderId as String)
+          .eq('message_id', message.messageId as String);
     } catch (e) {
       print("Error occurred while delete mesage: $e");
     }
@@ -89,7 +94,6 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   }
 
   Future<void> sendMessageBaseOnType(MessageEntity message) async {
-    String messageId = const Uuid().v1();
     final newMessage =
         MessageModel(
           senderId: message.senderId,
@@ -102,7 +106,6 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           isSeen: message.isSeen,
           messageType: message.messageType,
           message: message.message,
-          messageId: messageId,
           repliedMessageType: message.repliedMessageType,
         ).toJson();
     try {
@@ -116,20 +119,57 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   Stream<List<MessageEntity>> getMessages(MessageEntity message) {
     final controller = StreamController<List<MessageEntity>>();
     final List<MessageEntity> messages = [];
+    supabaseClient
+        .from('messages')
+        .select()
+        .or(
+          'and(sender_id.eq.${message.senderId},recipient_id.eq.${message.recipientId}),and(sender_id.eq.${message.recipientId},recipient_id.eq.${message.senderId})',
+        )
+        .order('created_at', ascending: true)
+        .then((data) {
+          final history =
+              data.map((e) => MessageModel.fromJson(e).toEntity()).toList();
+          messages.addAll(history);
+          controller.add(List.from(messages));
+        })
+        .catchError((e) {
+          print("Error loading message history: $e");
+        });
 
     final channel = supabaseClient.channel('public:messages');
 
     channel.onPostgresChanges(
       event: PostgresChangeEvent.all,
       schema: 'public',
-      filter:
-          'sender_id=eq.${message.senderId},recipient_id=eq.${message.recipientId}'
-              as PostgresChangeFilter,
+      table: 'messages',
       callback: (payload) {
         final newData = payload.newRecord;
-        final newMessage = MessageModel.fromJson(newData).toEntity();
-        messages.add(newMessage);
-        controller.add(List.from(messages));
+        final oldData = payload.oldRecord;
+
+        print('Postgres payload: $payload');
+
+        if (newData != null) {
+          final newMessage = MessageModel.fromJson(newData).toEntity();
+
+          final isRelevant =
+              (newMessage.senderId == message.senderId &&
+                  newMessage.recipientId == message.recipientId) ||
+              (newMessage.senderId == message.recipientId &&
+                  newMessage.recipientId == message.senderId);
+
+          if (isRelevant) {
+            messages.removeWhere((m) => m.messageId == newMessage.messageId);
+            messages.add(newMessage);
+            messages.sort((a, b) => a.createdAt!.compareTo(b.createdAt!));
+            controller.add(List.from(messages));
+          }
+        }
+
+        if (oldData.isNotEmpty) {
+          final deletedId = oldData['message_id'];
+          messages.removeWhere((m) => m.messageId == deletedId);
+          controller.add(List.from(messages));
+        }
       },
     );
 
@@ -176,8 +216,17 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
             callback: (payload) {
               final newData = payload.newRecord;
+              final oldData = payload.oldRecord;
+
               final newChat = ChatModel.fromJson(newData).toEntity();
-              chats.add(newChat);
+              final index = chats.indexWhere((c) => c.chatId == newChat.chatId);
+              if (index != -1) {
+                chats[index] = newChat;
+              } else {
+                chats.add(newChat);
+              }
+
+              chats.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
               controller.add(List.from(chats));
             },
           )
@@ -192,7 +241,24 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   @override
   Future<void> sendMessage(ChatEntity chat, MessageEntity message) async {
     await sendMessageBaseOnType(message);
-    final recentTextMessage = _getRecentTextMessage(message);
+    String recentTextMessage = "";
+
+    switch (message.messageType) {
+      case MessageTypeConst.photoMessage:
+        recentTextMessage = 'Photo';
+        break;
+      case MessageTypeConst.videoMessage:
+        recentTextMessage = ' Video';
+        break;
+      case MessageTypeConst.audioMessage:
+        recentTextMessage = ' Audio';
+        break;
+      case MessageTypeConst.gifMessage:
+        recentTextMessage = 'GIF';
+        break;
+      default:
+        recentTextMessage = message.message!;
+    }
 
     await addToChat(
       ChatEntity(
@@ -207,20 +273,5 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         totalUnReadMessages: chat.totalUnReadMessages,
       ),
     );
-  }
-}
-
-String _getRecentTextMessage(MessageEntity message) {
-  switch (message.messageType) {
-    case MessageTypeConst.photoMessage:
-      return '📷 Photo';
-    case MessageTypeConst.videoMessage:
-      return '📸 Video';
-    case MessageTypeConst.audioMessage:
-      return '🎵 Audio';
-    case MessageTypeConst.gifMessage:
-      return 'GIF';
-    default:
-      return message.message ?? '';
   }
 }

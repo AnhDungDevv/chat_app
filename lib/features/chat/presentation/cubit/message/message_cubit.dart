@@ -22,6 +22,7 @@ class MessageCubit extends Cubit<MessageState> {
   Future<void> getMessages({required MessageEntity message}) async {
     try {
       emit(MessageLoading());
+
       getMessageUsecase(message).listen(
         (messages) {
           emit(MessageLoaded(messages: messages));
@@ -52,7 +53,7 @@ class MessageCubit extends Cubit<MessageState> {
     required MessageEntity message,
   }) async {
     try {
-      await sendMessageUsecase(chat,message);
+      await sendMessageUsecase(chat, message);
     } on SocketException {
       emit(MessageFailure());
     } catch (e) {

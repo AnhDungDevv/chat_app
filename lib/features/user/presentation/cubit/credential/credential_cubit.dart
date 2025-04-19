@@ -20,6 +20,7 @@ class CredentialCubit extends Cubit<CredentialState> {
   Future<void> submitVerifyPhone({required String phoneNumber}) async {
     try {
       await verifyPhoneNumberUseCase(phoneNumber);
+
       emit(CredentialPhoneAuthSmsReceived());
     } on SocketException catch (_) {
       emit(CredentialFailure());

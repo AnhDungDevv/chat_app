@@ -47,7 +47,7 @@ class MessageModel extends MessageEntity {
       senderId: json['sender_id'] as String?,
       senderName: json['sender_name'] as String?,
       recipientId: json['recipient_id'] as String?,
-      recipientName: json['sender_name'] as String?,
+      recipientName: json['recipient_name'] as String?,
       createdAt: _parseDateTime(json['created_at']),
       isSeen: json['is_seen'] as bool?,
       message: json['message'] as String?,
@@ -77,7 +77,6 @@ class MessageModel extends MessageEntity {
     "message_type": messageType,
     "replied_message": repliedMessage,
     "replied_to": repliedTo,
-    "message_id": messageId,
     "replied_message_type": repliedMessageType,
   };
 

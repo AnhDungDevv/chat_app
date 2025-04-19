@@ -5,7 +5,7 @@ class SignInWithPhoneNumberUseCase {
 
   SignInWithPhoneNumberUseCase({required this.repository});
 
-  Future<void> call(String smsPinCode) async {
+  Future<bool> call(String smsPinCode) async {
     return repository.signInWithPhoneNumber(smsPinCode);
   }
 }

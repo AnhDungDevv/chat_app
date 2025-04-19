@@ -93,16 +93,23 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   }
 
   @override
-  Future<void> signInWithPhoneNumber(String smsPinCode) async {
+  Future<bool> signInWithPhoneNumber(String smsPinCode) async {
     try {
       final response = await supabase.auth.verifyOTP(
         phone: _phoneNumberState,
         token: smsPinCode,
         type: OtpType.sms,
       );
-      print("response ${response.user}");
-      if (response.user == null) {
-        throw Exception('Please enter a valid code');
+      final userData =
+          await supabase
+              .from('users')
+              .select('user_id')
+              .eq('user_id', response.user!.id)
+              .maybeSingle();
+      if (userData != null) {
+        return false;
+      } else {
+        return true;
       }
     } catch (e) {
       throw Exception("Unknown exception please try again");
@@ -138,6 +145,21 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
       await supabase.auth.signInWithOtp(phone: phoneNumber);
     } catch (e) {
       throw Exception("Error during phone number verification");
+    }
+  }
+
+  Future<bool> checkPhoneExists(String phoneNumber) async {
+    try {
+      final response =
+          await supabase
+              .from('users')
+              .select('user_id')
+              .eq('phone_number', phoneNumber)
+              .maybeSingle();
+
+      return response != null;
+    } catch (e) {
+      return false;
     }
   }
 }

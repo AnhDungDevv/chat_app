@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class ChatEntity extends Equatable {
-  final String? id;
+  final String? chatId;
   final String? senderId;
   final String? recipientId;
   final String? senderName;
@@ -13,7 +13,7 @@ class ChatEntity extends Equatable {
   final num? totalUnReadMessages;
 
   const ChatEntity({
-    this.id,
+    this.chatId,
     this.senderId,
     this.recipientId,
     this.senderName,
@@ -27,7 +27,7 @@ class ChatEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
+    chatId,
     senderId,
     recipientId,
     senderName,

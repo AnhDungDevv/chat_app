@@ -25,4 +25,5 @@ Future<GiphyGif?> pickGIF(BuildContext context) async {
   } catch (e) {
     toast(e.toString());
   }
+  return gif;
 }

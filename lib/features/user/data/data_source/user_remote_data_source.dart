@@ -3,7 +3,7 @@ import 'package:chat_application/features/user/domain/entities/user_entity.dart'
 
 abstract class UserRemoteDataSource {
   Future<void> verifyPhoneNumber(String phoneNumber);
-  Future<void> signInWithPhoneNumber(String smsPinCode);
+  Future<bool> signInWithPhoneNumber(String smsPinCode);
 
   Future<bool> isSignIn();
   Future<void> signOut();

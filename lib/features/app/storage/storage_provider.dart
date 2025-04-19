@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:chat_application/features/app/helpers/file_uploader.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mime/mime.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -101,17 +103,13 @@ class StorageProviderRemoteDataSource {
 
     final fileName =
         "$_uid/messages/$type/${otherUid ?? 'unknown'}/${DateTime.now().millisecondsSinceEpoch}.png";
-    final fileBytes = await file.readAsBytes();
-
+    final bytes = await compute(readBytesAndMime, file.path);
     await _client.storage
         .from('chat-files')
         .uploadBinary(
           fileName,
-          fileBytes,
-          fileOptions: FileOptions(
-            contentType: lookupMimeType(file.path),
-            upsert: true,
-          ),
+          bytes.data,
+          fileOptions: FileOptions(contentType: bytes.mimeType, upsert: true),
         );
 
     final publicUrl = _client.storage.from('chat-files').getPublicUrl(fileName);

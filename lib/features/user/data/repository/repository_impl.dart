@@ -29,7 +29,7 @@ class UserRepositoryImpl implements UserRepository {
   Future<bool> isSignIn() async => remoteDataSource.isSignIn();
 
   @override
-  Future<void> signInWithPhoneNumber(String smsPinCode) async =>
+  Future<bool> signInWithPhoneNumber(String smsPinCode) async =>
       remoteDataSource.signInWithPhoneNumber(smsPinCode);
 
   @override

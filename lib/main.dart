@@ -19,12 +19,19 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await supabase.Supabase.initialize(
-    url: 'https://gboeisktatdumeolpreu.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdib2Vpc2t0YXRkdW1lb2xwcmV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3MzkzODksImV4cCI6MjA2MDMxNTM4OX0.zwO-xpnVCAttNGvGPHoOFoM4NaddvAuWgD3TCIB1CfA',
-  );
-
+  try {
+    final res = await supabase.Supabase.initialize(
+      url: 'https://gboeisktatdumeolpreu.supabase.co',
+      anonKey:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdib2Vpc2t0YXRkdW1lb2xwcmV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3MzkzODksImV4cCI6MjA2MDMxNTM4OX0.zwO-xpnVCAttNGvGPHoOFoM4NaddvAuWgD3TCIB1CfA',
+      realtimeClientOptions: const supabase.RealtimeClientOptions(
+        logLevel: supabase.RealtimeLogLevel.info,
+      ),
+    );
+    print(res);
+  } catch (e) {
+    print("error : $e");
+  }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await dependencies.init();
   runApp(const MyApp());
