@@ -9,9 +9,12 @@ import 'package:chat_application/features/app/global/widgets/show_video_picked_w
 import 'package:chat_application/features/app/storage/storage_provider.dart';
 import 'package:chat_application/features/app/theme/style.s.dart';
 import 'package:chat_application/features/chat/domain/entities/message_entity.dart';
+import 'package:chat_application/features/chat/domain/entities/message_reply_entity.dart';
 import 'package:chat_application/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:chat_application/features/chat/presentation/cubit/message/message_state.dart';
 import 'package:chat_application/features/chat/presentation/widgets/chat_utils.dart';
+import 'package:chat_application/features/chat/presentation/widgets/message_replay_preview_widget.dart';
+import 'package:chat_application/features/chat/presentation/widgets/message_replay_type_widget.dart';
 import 'package:chat_application/features/chat/presentation/widgets/message_type_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -111,6 +114,22 @@ class _SingleChatPageState extends State<SingleChatPage> {
     }
   }
 
+  void onMessageSwipe({
+    String? message,
+    String? username,
+    String? type,
+    bool? isMe,
+  }) {
+    BlocProvider.of<MessageCubit>(
+      context,
+    ).setMessageReplay = MessageReplayEntity(
+      message: message,
+      username: username,
+      messageType: type,
+      isMe: isMe,
+    );
+  }
+
   @override
   void dispose() {
     _textMessageController.dispose();
@@ -125,6 +144,10 @@ class _SingleChatPageState extends State<SingleChatPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
+    final provider = BlocProvider.of<MessageCubit>(context);
+
+    bool _isReplying = provider.messageReplay.message != null;
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -196,6 +219,11 @@ class _SingleChatPageState extends State<SingleChatPage> {
                               isSeen: false,
                               isShowTick: true,
                               messageBgColor: tabColor,
+                              reply: MessageReplayEntity(
+                                message: message.repliedMessage,
+                                messageType: message.repliedMessageType,
+                                username: message.repliedTo,
+                              ),
                               onLongPress: () {
                                 displayAlertDialog(
                                   context,
@@ -205,18 +233,27 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                     ).deleteMessage(
                                       message: MessageEntity(
                                         senderId: message.senderId,
-                                        recipientId: message.recipientId,
+                                        recipientId: message.recipientName,
                                         messageId: message.messageId,
                                       ),
                                     );
                                     Navigator.pop(context);
                                   },
+
                                   confirmTitle: "Delete",
                                   content:
                                       "Are you sure you want to delete this meesage",
                                 );
                               },
-                              onSwipe: (details) {},
+                              onSwipe: (details) {
+                                onMessageSwipe(
+                                  message: message.message,
+                                  username: message.senderName,
+                                  type: message.messageType,
+                                  isMe: true,
+                                );
+                                setState(() {});
+                              },
                             );
                           } else {
                             return _messageLayout(
@@ -226,6 +263,11 @@ class _SingleChatPageState extends State<SingleChatPage> {
                               createAt: message.createdAt,
                               isSeen: false,
                               isShowTick: true,
+                              reply: MessageReplayEntity(
+                                message: message.repliedMessage,
+                                messageType: message.repliedMessageType,
+                                username: message.recipientName,
+                              ),
                               messageBgColor: senderMessageColor,
                               onLongPress: () {
                                 displayAlertDialog(
@@ -247,20 +289,50 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                       "Are you sure you want to delete this meesage",
                                 );
                               },
-                              onSwipe: (details) {},
+                              onSwipe: (details) {
+                                onMessageSwipe(
+                                  message: message.message,
+                                  username: message.senderName,
+                                  type: message.messageType,
+                                  isMe: false,
+                                );
+                                setState(() {});
+                              },
                             );
                           }
                         },
                       ),
                     ),
 
+                    _isReplying == true
+                        ? const SizedBox(height: 5)
+                        : const SizedBox(height: 0),
+
+                    _isReplying == true
+                        ? Row(
+                          children: [
+                            Expanded(
+                              child: MessageReplayPreviewWidget(
+                                onCancelReplayListener: () {
+                                  provider.setMessageReplay =
+                                      MessageReplayEntity();
+                                  setState(() {});
+                                },
+                              ),
+                            ),
+                            Container(width: 60),
+                          ],
+                        )
+                        : Container(),
+
                     Container(
                       margin: EdgeInsets.only(
                         left: 10,
                         right: 10,
-                        top: 5,
+                        top: _isReplying == true ? 0 : 5,
                         bottom: 5,
                       ),
+
                       child: Row(
                         children: [
                           Expanded(
@@ -270,7 +342,13 @@ class _SingleChatPageState extends State<SingleChatPage> {
                               ),
                               decoration: BoxDecoration(
                                 color: appBarColor,
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius:
+                                    _isReplying == true
+                                        ? const BorderRadius.only(
+                                          bottomLeft: Radius.circular(25),
+                                          bottomRight: Radius.circular(24),
+                                        )
+                                        : BorderRadius.circular(25),
                               ),
                               child: TextField(
                                 onTap: () {
@@ -306,7 +384,6 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                           angle: -0.5,
                                           child: GestureDetector(
                                             onTap: () {
-                                              print("abababba");
                                               setState(() {
                                                 _isShowAttachWindown =
                                                     !_isShowAttachWindown;
@@ -512,14 +589,15 @@ class _SingleChatPageState extends State<SingleChatPage> {
   _messageLayout({
     Color? messageBgColor,
     Alignment? alignment,
-    String? messageType,
     DateTime? createAt,
     GestureDragUpdateCallback? onSwipe,
-    double? rightPadding,
     String? message,
+    String? messageType,
     bool? isShowTick,
     bool? isSeen,
     VoidCallback? onLongPress,
+    MessageReplayEntity? reply,
+    double? rightPadding,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
@@ -536,10 +614,10 @@ class _SingleChatPageState extends State<SingleChatPage> {
                     Container(
                       margin: const EdgeInsets.only(top: 10),
                       padding: EdgeInsets.only(
-                        left: 3,
+                        left: 5,
                         right:
                             messageType == MessageTypeConst.textMessage
-                                ? 85
+                                ? (rightPadding ?? 5)
                                 : 5,
                         top: 5,
                         bottom: 5,
@@ -551,9 +629,80 @@ class _SingleChatPageState extends State<SingleChatPage> {
                         color: messageBgColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: MessageTypeWidget(
-                        message: message,
-                        type: messageType,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          reply?.message == null || reply?.message == ""
+                              ? const SizedBox()
+                              : Container(
+                                height:
+                                    reply!.messageType ==
+                                            MessageTypeConst.textMessage
+                                        ? 70
+                                        : 80,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      height: double.infinity,
+                                      width: 4.5,
+                                      decoration: BoxDecoration(
+                                        color:
+                                            reply.username ==
+                                                    widget.message.recipientName
+                                                ? Colors.deepPurpleAccent
+                                                : tabColor,
+                                        borderRadius: const BorderRadius.only(
+                                          topLeft: Radius.circular(15),
+                                          bottomLeft: Radius.circular(15),
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0,
+                                          vertical: 5,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "${reply.username == widget.message.recipientName ? reply.username : "You"}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    reply.username ==
+                                                            widget
+                                                                .message
+                                                                .recipientName
+                                                        ? Colors
+                                                            .deepPurpleAccent
+                                                        : tabColor,
+                                              ),
+                                            ),
+                                            MessageReplayTypeWidget(
+                                              message: reply.message,
+                                              type: reply.messageType,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          const SizedBox(height: 3),
+
+                          MessageTypeWidget(
+                            message: message,
+                            type: messageType,
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -566,18 +715,14 @@ class _SingleChatPageState extends State<SingleChatPage> {
                     children: [
                       Text(
                         DateFormat.jm().format(createAt!),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: lightGreyColor,
-                        ),
+                        style: const TextStyle(fontSize: 12, color: greyColor),
                       ),
-                      SizedBox(width: 5),
+                      const SizedBox(width: 5),
                       isShowTick == true
                           ? Icon(
                             isSeen == true ? Icons.done_all : Icons.done,
                             size: 16,
-                            color:
-                                isSeen == true ? Colors.blue : lightGreyColor,
+                            color: isSeen == true ? Colors.blue : greyColor,
                           )
                           : Container(),
                     ],
@@ -622,11 +767,27 @@ class _SingleChatPageState extends State<SingleChatPage> {
   }
 
   void _sendTextMessage() async {
-    if (_isDisplaySendButton) {
-      _sendMessage(
-        message: _textMessageController.text,
-        type: MessageTypeConst.textMessage,
-      );
+    final provider = BlocProvider.of<MessageCubit>(context);
+
+    if (_isDisplaySendButton || _textMessageController.text.isNotEmpty) {
+      if (provider.messageReplay.message != null) {
+        _sendMessage(
+          message: _textMessageController.text,
+          type: MessageTypeConst.textMessage,
+          repliedMessage: provider.messageReplay.message,
+          repliedTo: provider.messageReplay.userId,
+          repliedMessageType: provider.messageReplay.messageType,
+        );
+      } else {
+        _sendMessage(
+          message: _textMessageController.text,
+          type: MessageTypeConst.textMessage,
+        );
+      }
+      provider.setMessageReplay = MessageReplayEntity();
+      setState(() {
+        _textMessageController.clear();
+      });
       return;
     }
 
