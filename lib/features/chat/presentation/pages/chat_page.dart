@@ -8,6 +8,7 @@ import 'package:chat_application/features/chat/presentation/cubit/chat/chat_stat
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ChatPage extends StatefulWidget {
   final String uid;
@@ -80,8 +81,47 @@ class _ChatPageState extends State<ChatPage> {
               },
             );
           }
-          return const Center(
-            child: CircularProgressIndicator(color: tabColor),
+          return ListView.separated(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            itemCount: 10,
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              return ListTile(
+                leading: Shimmer.fromColors(
+                  baseColor: Colors.grey.shade200,
+                  highlightColor: Colors.grey.shade100,
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: const BoxDecoration(
+                      color: Colors.white60,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+                title: Shimmer.fromColors(
+                  baseColor: Colors.grey.shade200,
+                  highlightColor: Colors.grey.shade100,
+                  child: Container(
+                    width: double.infinity,
+                    height: 12,
+                    color: Colors.white60,
+                  ),
+                ),
+                subtitle: Padding(
+                  padding: const EdgeInsets.only(top: 6.0),
+                  child: Shimmer.fromColors(
+                    baseColor: Colors.grey.shade300,
+                    highlightColor: Colors.grey.shade100,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      height: 10,
+                      color: Colors.white60,
+                    ),
+                  ),
+                ),
+              );
+            },
           );
         },
       ),

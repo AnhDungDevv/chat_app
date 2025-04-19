@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:chat_application/features/user/presentation/cubit/get_single/get_single_user_cubit.dart';
+import 'package:chat_application/features/user/presentation/cubit/get_single/get_single_user_state.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -113,6 +115,10 @@ class _SingleChatPageState extends State<SingleChatPage> {
   @override
   void initState() {
     _soundRecorder = FlutterSoundRecorder();
+    BlocProvider.of<GetSingleUserCubit>(
+      context,
+    ).getSingleUser(uid: widget.message.recipientId!);
+
     _openAudioRecording();
     context.read<MessageCubit>().getMessages(
       message: MessageEntity(
@@ -189,19 +195,38 @@ class _SingleChatPageState extends State<SingleChatPage> {
     return Scaffold(
       appBar: AppBar(
         title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("${widget.message.recipientName}"),
-            Text(
-              "Online",
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+            BlocBuilder<GetSingleUserCubit, GetSingleUserState>(
+              builder: (context, state) {
+                if (state is GetSingleUserLoaded) {
+                  return state.singleUser.isOnline == true
+                      ? const Text(
+                        'Online',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      )
+                      : const Text(
+                        'Offline',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      );
+                }
+                return Container();
+              },
             ),
           ],
         ),
         actions: const [
           Icon(Icons.videocam_rounded, size: 25),
-          SizedBox(width: 25),
+          SizedBox(width: 15),
           Icon(Icons.call, size: 25),
-          SizedBox(width: 25),
+          SizedBox(width: 15),
           Icon(Icons.more_vert, size: 25),
           SizedBox(width: 15),
         ],
@@ -247,13 +272,14 @@ class _SingleChatPageState extends State<SingleChatPage> {
                           if (message.senderId == widget.message.senderId) {
                             return MessageBubble(
                               key: Key(message.messageId!),
+                              senderId: widget.message.senderId!,
                               message: "${message.message}",
                               messageType: message.messageType!,
                               alignment: Alignment.centerRight,
                               createAt: message.createdAt!,
                               isSeen: false,
                               isShowTick: true,
-                              messageBgColor: tabColor,
+                              messageBgColor: messageColor,
                               reply: MessageReplayEntity(
                                 message: message.repliedMessage,
                                 messageType: message.repliedMessageType,
@@ -294,6 +320,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
                           } else {
                             return MessageBubble(
                               key: Key(message.messageId!),
+                              senderId: widget.message.senderId!,
                               message: "${message.message}",
                               messageType: message.messageType!,
                               alignment: Alignment.centerLeft,
@@ -526,8 +553,9 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                   ),
                                   skinToneConfig: SkinToneConfig(),
                                   categoryViewConfig: CategoryViewConfig(),
-                                  bottomActionBarConfig:
-                                      BottomActionBarConfig(),
+                                  bottomActionBarConfig: BottomActionBarConfig(
+                                    backgroundColor: backgroundColor,
+                                  ),
                                   searchViewConfig: SearchViewConfig(),
                                 ),
 

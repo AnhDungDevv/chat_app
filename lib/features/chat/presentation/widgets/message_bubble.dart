@@ -10,6 +10,7 @@ import 'package:swipe_to/swipe_to.dart';
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
     super.key,
+    required this.senderId,
     required this.message,
     required this.messageType,
     required this.alignment,
@@ -24,6 +25,7 @@ class MessageBubble extends StatelessWidget {
   });
 
   final String message;
+  final String senderId;
   final String messageType;
   final Alignment alignment;
   final DateTime createAt;
@@ -90,9 +92,9 @@ class MessageBubble extends StatelessWidget {
                                       width: 4.5,
                                       decoration: BoxDecoration(
                                         color:
-                                            reply!.username == "You"
-                                                ? tabColor
-                                                : Colors.deepPurpleAccent,
+                                            reply!.userId == senderId
+                                                ? Colors.deepPurpleAccent
+                                                : tabColor,
                                         borderRadius: const BorderRadius.only(
                                           topLeft: Radius.circular(15),
                                           bottomLeft: Radius.circular(15),

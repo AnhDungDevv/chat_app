@@ -36,7 +36,7 @@ class MessageReplayTypeWidget extends StatelessWidget {
     } else if (type == MessageTypeConst.videoMessage) {
       return Row(
         children: [
-          const SizedBox(width: 200, child: Text("Video")),
+          const SizedBox(width: 180, child: Text("Video")),
           SizedBox(
             width: 50,
             height: 50,

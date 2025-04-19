@@ -4,7 +4,10 @@ import 'package:chat_application/features/call/presentation/pages/call_history_p
 import 'package:chat_application/features/chat/presentation/pages/chat_page.dart';
 import 'package:chat_application/features/app/home/contact_page.dart';
 import 'package:chat_application/features/status/presentation/pages/status_page.dart';
+import 'package:chat_application/features/user/domain/entities/user_entity.dart';
+import 'package:chat_application/features/user/presentation/cubit/user/user_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
   final String uid;
@@ -29,6 +32,27 @@ class _HomePageState extends State<HomePage>
         _currentTabIndex = _tabController!.index;
       });
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        BlocProvider.of<UserCubit>(
+          context,
+        ).updateUser(user: UserEntity(uid: widget.uid, isOnline: true));
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.paused:
+        BlocProvider.of<UserCubit>(
+          context,
+        ).updateUser(user: UserEntity(uid: widget.uid, isOnline: false));
+        break;
+      case AppLifecycleState.hidden:
+        break;
+    }
   }
 
   @override
