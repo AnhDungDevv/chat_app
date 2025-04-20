@@ -1,4 +1,5 @@
 import 'package:chat_application/features/chat/chat_injection.dart';
+import 'package:chat_application/features/status/status_injection.dart';
 import 'package:chat_application/features/user/user_injecttion.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,4 +11,5 @@ Future<void> init() async {
 
   await userInjection();
   await chatInjection();
+  await statusInjection();
 }
