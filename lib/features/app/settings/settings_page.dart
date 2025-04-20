@@ -138,7 +138,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           _settingsItemWidget(
             title: "Logout",
-            description: "Logout from WhatsApp Clone",
+            description: "Logout from App Clone",
             icon: Icons.exit_to_app,
             onTap: () {
               displayAlertDialog(

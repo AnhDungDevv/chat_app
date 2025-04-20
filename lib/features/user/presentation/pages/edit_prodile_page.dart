@@ -113,7 +113,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             _profileItem(
               controller: _aboutController,
               title: "About",
-              description: "Hey there I'm using WhatsApp",
+              description: "Hey there I'm using App",
               icon: Icons.info_outline,
               onTap: () {},
             ),
@@ -272,7 +272,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           )
           .then((value) {
             toast("Profile updated");
-            
           });
     }
   }

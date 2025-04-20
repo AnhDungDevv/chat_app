@@ -1,5 +1,5 @@
 import 'package:chat_application/features/app/config/supabase_config.dart'
-    as supabaseConfig;
+    as supabase_config;
 import 'package:chat_application/features/app/root_page/root_page.dart';
 import 'package:chat_application/features/app/theme/app_theme.dart';
 import 'package:chat_application/features/chat/presentation/cubit/chat/chat_cubit.dart';
@@ -26,7 +26,7 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
 
-  await supabaseConfig.SupabaseConfig.init();
+  await supabase_config.SupabaseConfig.init();
 
   await dependencies.init();
 
