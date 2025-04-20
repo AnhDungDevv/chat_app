@@ -1,6 +1,7 @@
 import 'dart:io';
-
 import 'package:bloc/bloc.dart';
+import 'dart:developer';
+
 import 'package:chat_application/features/status/domain/entities/status_enity.dart';
 import 'package:chat_application/features/status/domain/usecases/create_status_usecase.dart';
 import 'package:chat_application/features/status/domain/usecases/delete_status_usecase.dart';
@@ -32,6 +33,7 @@ class StatusCubit extends Cubit<StatusState> {
       emit(StatusLoading());
       final streamResponse = getStatusesUseCase(status);
       streamResponse.listen((statuses) {
+        log("status ------ ----- $statuses");
         emit(StatusLoaded(statuses: statuses));
       });
     } on SocketException {
@@ -43,7 +45,7 @@ class StatusCubit extends Cubit<StatusState> {
 
   Future<void> createStatus({required StatusEntity status}) async {
     try {
-      await createStatusUseCase.call(status);
+      await createStatusUseCase(status);
     } on SocketException {
       emit(StatusFailure());
     } catch (_) {
@@ -53,7 +55,7 @@ class StatusCubit extends Cubit<StatusState> {
 
   Future<void> deleteStatus({required StatusEntity status}) async {
     try {
-      await deleteStatusUseCase.call(status);
+      await deleteStatusUseCase(status);
     } on SocketException {
       emit(StatusFailure());
     } catch (_) {
@@ -63,7 +65,7 @@ class StatusCubit extends Cubit<StatusState> {
 
   Future<void> updateStatus({required StatusEntity status}) async {
     try {
-      await updateStatusUseCase.call(status);
+      await updateStatusUseCase(status);
     } on SocketException {
       emit(StatusFailure());
     } catch (_) {
@@ -73,7 +75,7 @@ class StatusCubit extends Cubit<StatusState> {
 
   Future<void> updateOnlyImageStatus({required StatusEntity status}) async {
     try {
-      await updateOnlyImageStatusUseCase.call(status);
+      await updateOnlyImageStatusUseCase(status);
     } on SocketException {
       emit(StatusFailure());
     } catch (_) {
@@ -87,7 +89,7 @@ class StatusCubit extends Cubit<StatusState> {
     required String userId,
   }) async {
     try {
-      await seenStatusUpdateUseCase.call(statusId, imageIndex, userId);
+      await seenStatusUpdateUseCase(statusId, imageIndex, userId);
     } on SocketException {
       emit(StatusFailure());
     } catch (_) {

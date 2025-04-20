@@ -10,8 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
+  final int? index;
   final String uid;
-  const HomePage({super.key, required this.uid});
+  const HomePage({super.key, required this.uid, this.index});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -32,6 +33,12 @@ class _HomePageState extends State<HomePage>
         _currentTabIndex = _tabController!.index;
       });
     });
+    if (widget.index != null) {
+      setState(() {
+        _currentTabIndex = widget.index!;
+        _tabController!.animateTo(1);
+      });
+    }
   }
 
   @override
@@ -128,7 +135,11 @@ class _HomePageState extends State<HomePage>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [ChatPage(uid: widget.uid), StatusPage(), CallHistoryPage()],
+        children: [
+          ChatPage(uid: widget.uid),
+          StatusPage(userId: widget.uid),
+          CallHistoryPage(),
+        ],
       ),
       floatingActionButton: switchFloatingActionButtonOnTabIndex(
         _currentTabIndex,

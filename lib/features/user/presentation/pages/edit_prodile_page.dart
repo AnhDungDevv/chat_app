@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:developer';
 
 import 'package:chat_application/features/app/constants/app_const.dart';
 import 'package:chat_application/features/app/global/widgets/prodile_widget.dart';
@@ -33,7 +34,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         if (pickedFile != null) {
           _image = File(pickedFile.path);
         } else {
-          print("no image has been selected");
+          log("no image has been selected");
         }
       });
     } catch (e) {

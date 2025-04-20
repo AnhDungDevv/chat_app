@@ -1,12 +1,15 @@
 import 'package:chat_application/features/app/config/supabase_config.dart'
     as supabase_config;
+import 'package:chat_application/features/app/home/home_page.dart';
 import 'package:chat_application/features/app/root_page/root_page.dart';
+import 'package:chat_application/features/app/splash/splash_screen.dart';
 import 'package:chat_application/features/app/theme/app_theme.dart';
 import 'package:chat_application/features/chat/presentation/cubit/chat/chat_cubit.dart';
 import 'package:chat_application/features/chat/presentation/cubit/message/message_cubit.dart';
 import 'package:chat_application/features/status/presentation/cubit/get_my_status/get_my_status_cubit.dart';
 import 'package:chat_application/features/status/presentation/cubit/status/status_cubit.dart';
 import 'package:chat_application/features/user/presentation/cubit/auth/auth_cubit.dart';
+import 'package:chat_application/features/user/presentation/cubit/auth/auth_state.dart';
 import 'package:chat_application/features/user/presentation/cubit/credential/credential_cubit.dart';
 import 'package:chat_application/features/user/presentation/cubit/get_device_number/get_device_number_cubit.dart';
 import 'package:chat_application/features/user/presentation/cubit/get_single/get_single_user_cubit.dart';
@@ -38,28 +41,49 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: _buildBlocProviders(),
+      providers: [
+        BlocProvider(create: (_) => dependencies.sl<AuthCubit>()..appStarted()),
+        BlocProvider(create: (_) => dependencies.sl<CredentialCubit>()),
+        BlocProvider(create: (_) => dependencies.sl<GetSingleUserCubit>()),
+        BlocProvider(create: (_) => dependencies.sl<UserCubit>()),
+        BlocProvider(create: (_) => dependencies.sl<GetDeviceNumberCubit>()),
+        BlocProvider(create: (_) => dependencies.sl<ChatCubit>()),
+        BlocProvider(create: (_) => dependencies.sl<MessageCubit>()),
+        BlocProvider(create: (_) => dependencies.sl<StatusCubit>()),
+        BlocProvider(create: (_) => dependencies.sl<GetMyStatusCubit>()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.dark(),
-        onGenerateRoute: GenerateRoutes.router,
         initialRoute: "/",
-        home: const RootPage(),
+        routes: {
+          "/": (context) {
+            return BlocBuilder<AuthCubit, AuthState>(
+              builder: (context, authState) {
+                if (authState is Authenticated) {
+                  return HomePage(uid: authState.uid);
+                }
+                return SplashScreen();
+              },
+            );
+          },
+        },
+        onGenerateRoute: GenerateRoutes.router,
       ),
     );
   }
 
-  List<BlocProvider> _buildBlocProviders() {
-    return [
-      BlocProvider(create: (_) => dependencies.sl<AuthCubit>()..appStarted()),
-      BlocProvider(create: (_) => dependencies.sl<CredentialCubit>()),
-      BlocProvider(create: (_) => dependencies.sl<GetSingleUserCubit>()),
-      BlocProvider(create: (_) => dependencies.sl<UserCubit>()),
-      BlocProvider(create: (_) => dependencies.sl<GetDeviceNumberCubit>()),
-      BlocProvider(create: (_) => dependencies.sl<ChatCubit>()),
-      BlocProvider(create: (_) => dependencies.sl<MessageCubit>()),
-      BlocProvider(create: (_) => dependencies.sl<StatusCubit>()),
-      BlocProvider(create: (_) => dependencies.sl<GetMyStatusCubit>()),
-    ];
-  }
+  // List<BlocProvider> _buildBlocProviders() {
+  //   return [
+  //     BlocProvider(create: (_) => dependencies.sl<AuthCubit>()..appStarted()),
+  //     BlocProvider(create: (_) => dependencies.sl<CredentialCubit>()),
+  //     BlocProvider(create: (_) => dependencies.sl<GetSingleUserCubit>()),
+  //     BlocProvider(create: (_) => dependencies.sl<UserCubit>()),
+  //     BlocProvider(create: (_) => dependencies.sl<GetDeviceNumberCubit>()),
+  //     BlocProvider(create: (_) => dependencies.sl<ChatCubit>()),
+  //     BlocProvider(create: (_) => dependencies.sl<MessageCubit>()),
+  //     BlocProvider(create: (_) => dependencies.sl<StatusCubit>()),
+  //     BlocProvider(create: (_) => dependencies.sl<GetMyStatusCubit>()),
+  //   ];
+  // }
 }

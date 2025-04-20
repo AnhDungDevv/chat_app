@@ -1,6 +1,7 @@
-import 'package:chat_application/features/app/global/widgets/prodile_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get_time_ago/get_time_ago.dart';
+
+import 'package:chat_application/features/app/global/widgets/prodile_widget.dart';
 
 class MyStatusPage extends StatefulWidget {
   const MyStatusPage({super.key});

@@ -1,20 +1,16 @@
 import 'dart:math';
-
 import 'package:chat_application/features/app/theme/style.s.dart';
 import 'package:chat_application/features/status/domain/entities/status_image_entity.dart';
 import 'package:flutter/material.dart';
 
-class StatusDottedBordersWidget extends CustomPaint {
-  //number of stories
+class StatusDottedBordersWidget extends CustomPainter {
   final int numberOfStories;
-
-  // Length of the space arc
   final int spaceLength;
   final String? userId;
   final List<StatusImageEntity>? images;
   final bool isMe;
+
   StatusDottedBordersWidget({
-    super.key,
     required this.numberOfStories,
     this.spaceLength = 10,
     this.userId,
@@ -22,31 +18,35 @@ class StatusDottedBordersWidget extends CustomPaint {
     required this.isMe,
   });
 
-  //start of the arc painting in degree(0-360)
   double startOfArcInDegree = 0;
 
-  double inRads(double degree) {
-    return (degree * pi) / 180;
-  }
+  double inRads(double degree) => (degree * pi) / 180;
 
   @override
-  bool shouldRepaint(StatusDottedBordersWidget oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(StatusDottedBordersWidget oldDelegate) => true;
 
   @override
   void paint(Canvas canvas, Size size) {
-    Rect rect = Rect.fromLTWH(0, 0, size.width, size.height);
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
+
+    Color getColorForIndex(int index) {
+      if (images == null || images!.isEmpty) {
+        return greyColor.withAlpha((0.5 * 255).toInt());
+      }
+
+      final image = images![index];
+      final hasViewed = image.viewers?.contains(userId) ?? false;
+
+      if (isMe || hasViewed) {
+        return greyColor.withAlpha((0.5 * 255).toInt());
+      } else {
+        return tabColor;
+      }
+    }
 
     if (numberOfStories <= 1) {
-      final Color circleColor;
-      if (isMe) {
-        circleColor = greyColor.withAlpha((0.5 * 255).toInt());
-      } else if (images![0].viewers!.contains(userId)) {
-        circleColor = greyColor.withAlpha((0.5 * 255).toInt());
-      } else {
-        circleColor = tabColor;
-      }
+      final circleColor = getColorForIndex(0);
+
       canvas.drawCircle(
         Offset(size.width / 2, size.height / 2),
         min(size.width / 2, size.height / 2),
@@ -62,22 +62,21 @@ class StatusDottedBordersWidget extends CustomPaint {
       if (arcLength <= 0) {
         arcLength = 360 / spaceLength - 1;
       }
+
       for (int i = 0; i < numberOfStories; i++) {
+        final arcColor = getColorForIndex(i % (images?.length ?? 1));
+
         canvas.drawArc(
           rect,
           inRads(startOfArcInDegree),
           inRads(arcLength),
           false,
           Paint()
-            ..color =
-                isMe
-                    ? greyColor.withAlpha((0.5 * 255).toInt())
-                    : images![i].viewers!.contains(userId)
-                    ? greyColor.withAlpha((0.5 * 255).toInt())
-                    : tabColor
+            ..color = arcColor
             ..strokeWidth = 2.5
             ..style = PaintingStyle.stroke,
         );
+
         startOfArcInDegree += arcLength + spaceLength;
       }
     }

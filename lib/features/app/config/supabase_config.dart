@@ -1,5 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:developer';
 
 class SupabaseConfig {
   static Future<void> init() async {
@@ -16,8 +17,8 @@ class SupabaseConfig {
 
       await Supabase.initialize(url: url, anonKey: anonKey);
     } catch (e, stackTrace) {
-      print('[SupabaseConfig] Initialization failed: $e');
-      print('[SupabaseConfig] StackTrace: $stackTrace');
+      log('[SupabaseConfig] Initialization failed: $e');
+      log('[SupabaseConfig] StackTrace: $stackTrace');
     }
   }
 

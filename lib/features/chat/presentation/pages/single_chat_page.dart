@@ -8,6 +8,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:developer';
 
 import 'package:chat_application/features/app/constants/app_assets.dart';
 import 'package:chat_application/features/app/constants/app_const.dart';
@@ -87,7 +88,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
         if (pickedFile != null) {
           _image = File(pickedFile.path);
         } else {
-          print("no image has been selected");
+          log("no image has been selected");
         }
       });
     } catch (e) {
@@ -104,7 +105,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
         if (pickedFile != null) {
           _video = File(pickedFile.path);
         } else {
-          print("No video has been selected");
+          log("No video has been selected");
         }
       });
     } catch (e) {
@@ -117,7 +118,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
     _soundRecorder = FlutterSoundRecorder();
     BlocProvider.of<GetSingleUserCubit>(
       context,
-    ).getSingleUser(uid: widget.message.recipientId!);
+    ).getSingleUser(userId: widget.message.recipientId!);
 
     _openAudioRecording();
     context.read<MessageCubit>().getMessages(

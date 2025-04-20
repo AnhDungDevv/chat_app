@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:chat_application/features/app/constants/message_type_const.dart';
 import 'package:chat_application/features/chat/data/models/chat_model.dart';
@@ -19,13 +20,13 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .delete()
           .eq('chat_id', chat.chatId as String);
     } catch (e) {
-      print("Error occurred while delete chat: $e");
+      log("Error occurred while delete chat: $e");
     }
   }
 
   @override
   Future<void> deleteMessage(MessageEntity message) async {
-    print("message delete ${message.messageId}");
+    log("message delete ${message.messageId}");
     try {
       await supabaseClient
           .from('messages')
@@ -34,7 +35,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           .eq('sender_id', message.senderId as String)
           .eq('message_id', message.messageId as String);
     } catch (e) {
-      print("Error occurred while delete mesage: $e");
+      log("Error occurred while delete mesage: $e");
     }
   }
 
@@ -89,7 +90,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
             .eq('recipient_id', chat.senderId as String);
       }
     } catch (e) {
-      print("Error occurred while adding/updating chat: $e");
+      log("Error occurred while adding/updating chat: $e");
     }
   }
 
@@ -111,7 +112,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     try {
       await supabaseClient.from('messages').insert(newMessage);
     } catch (e) {
-      print("Error occurred while sending message: $e");
+      log("Error occurred while sending message: $e");
     }
   }
 
@@ -133,7 +134,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           controller.add(List.from(messages));
         })
         .catchError((e) {
-          print("Error loading message history: $e");
+          log("Error loading message history: $e");
         });
 
     final channel = supabaseClient.channel('public:messages');
@@ -146,7 +147,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         final newData = payload.newRecord;
         final oldData = payload.oldRecord;
 
-        print('Postgres payload: $payload');
+        log('Postgres payload: $payload');
 
         if (newData != null) {
           final newMessage = MessageModel.fromJson(newData).toEntity();

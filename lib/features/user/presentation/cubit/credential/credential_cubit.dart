@@ -1,6 +1,7 @@
 import 'dart:io';
-
 import 'package:bloc/bloc.dart';
+import 'dart:developer';
+
 import 'package:chat_application/features/user/domain/entities/user_entity.dart';
 import 'package:chat_application/features/user/domain/usecases/creadetial/sign_in_with_phone_number_usecase.dart';
 import 'package:chat_application/features/user/domain/usecases/creadetial/verify_phone_number_usecsae.dart';
@@ -34,11 +35,11 @@ class CredentialCubit extends Cubit<CredentialState> {
       await signInWithPhoneNumberUseCase(sms);
       emit(CredentialPhoneAuthProfileInfo());
     } on SocketException catch (e) {
-      print("errror : $e");
+      log("errror : $e");
 
       emit(CredentialFailure());
     } catch (e) {
-      print("errror : $e");
+      log("errror : $e");
 
       emit(CredentialFailure());
     }
@@ -49,11 +50,11 @@ class CredentialCubit extends Cubit<CredentialState> {
       await createUserUseCase(user);
       emit(CredentialSuccess());
     } on SocketException catch (e) {
-      print("errror : $e");
+      log("errror : $e");
 
       emit(CredentialFailure());
     } catch (e) {
-      print("errror : $e");
+      log("errror : $e");
 
       emit(CredentialFailure());
     }

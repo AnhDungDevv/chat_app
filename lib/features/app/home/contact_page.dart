@@ -22,7 +22,9 @@ class _ContactPageState extends State<ContactPage> {
   @override
   void initState() {
     BlocProvider.of<UserCubit>(context).getAllUsers();
-    BlocProvider.of<GetSingleUserCubit>(context).getSingleUser(uid: widget.uid);
+    BlocProvider.of<GetSingleUserCubit>(
+      context,
+    ).getSingleUser(userId: widget.uid);
     super.initState();
   }
 
