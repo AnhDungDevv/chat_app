@@ -1,7 +1,6 @@
 import 'package:chat_application/features/app/config/supabase_config.dart'
     as supabase_config;
 import 'package:chat_application/features/app/home/home_page.dart';
-import 'package:chat_application/features/app/root_page/root_page.dart';
 import 'package:chat_application/features/app/splash/splash_screen.dart';
 import 'package:chat_application/features/app/theme/app_theme.dart';
 import 'package:chat_application/features/chat/presentation/cubit/chat/chat_cubit.dart';
@@ -72,18 +71,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-
-  // List<BlocProvider> _buildBlocProviders() {
-  //   return [
-  //     BlocProvider(create: (_) => dependencies.sl<AuthCubit>()..appStarted()),
-  //     BlocProvider(create: (_) => dependencies.sl<CredentialCubit>()),
-  //     BlocProvider(create: (_) => dependencies.sl<GetSingleUserCubit>()),
-  //     BlocProvider(create: (_) => dependencies.sl<UserCubit>()),
-  //     BlocProvider(create: (_) => dependencies.sl<GetDeviceNumberCubit>()),
-  //     BlocProvider(create: (_) => dependencies.sl<ChatCubit>()),
-  //     BlocProvider(create: (_) => dependencies.sl<MessageCubit>()),
-  //     BlocProvider(create: (_) => dependencies.sl<StatusCubit>()),
-  //     BlocProvider(create: (_) => dependencies.sl<GetMyStatusCubit>()),
-  //   ];
-  // }
 }
