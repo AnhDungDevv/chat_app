@@ -405,7 +405,7 @@ class _StatusPageState extends State<StatusPage> {
                           _eitherShowOrUploadSheet(myStatus, currentUser);
                         },
                         child: Text(
-                          "tab to add your status widget",
+                          "Tab to add your status ",
                           style: TextStyle(color: greyColor),
                         ),
                       ),

@@ -25,16 +25,16 @@ class StatusRemoteDataSourceImpl implements StatusRemoteDataSource {
         username: status.username,
         caption: status.caption,
       );
-
+      print("new Status $newStatus");
       final response =
           await supabase
               .from('status')
               .insert(newStatus.toJson())
               .select()
               .single();
-
+      print(response);
       final insertedStatusId = response['status_id'] as String;
-
+      print(insertedStatusId);
       if (status.stories?.isNotEmpty == true) {
         final storiesJson =
             status.stories!

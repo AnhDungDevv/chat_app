@@ -55,7 +55,6 @@ class StatusModel extends StatusEntity {
   }
 
   Map<String, dynamic> toJson() => {
-    "status_id": statusId,
     "image_url": imageUrl,
     "user_id": userId,
     "username": username,
@@ -63,7 +62,6 @@ class StatusModel extends StatusEntity {
     "created_at": createdAt?.toIso8601String(),
     "phone_number": phoneNumber,
     "caption": caption,
-    "stories": stories?.map((story) => story.toJson()).toList(),
   };
   StatusEntity toEntity() {
     return StatusEntity(
