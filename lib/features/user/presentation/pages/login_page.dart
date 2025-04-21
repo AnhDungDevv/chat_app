@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
           return BlocBuilder<AuthCubit, AuthState>(
             builder: (context, authState) {
               if (authState is Authenticated) {
-                return HomePage(uid: authState.uid);
+                return HomePage(userId: authState.uid);
               }
               return _bodyWidget();
             },

@@ -11,8 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
   final int? index;
-  final String uid;
-  const HomePage({super.key, required this.uid, this.index});
+  final String userId;
+  const HomePage({super.key, required this.userId, this.index});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -48,14 +48,14 @@ class _HomePageState extends State<HomePage>
       case AppLifecycleState.resumed:
         BlocProvider.of<UserCubit>(
           context,
-        ).updateUser(user: UserEntity(uid: widget.uid, isOnline: true));
+        ).updateUser(user: UserEntity(userId: widget.userId, isOnline: true));
         break;
       case AppLifecycleState.inactive:
       case AppLifecycleState.detached:
       case AppLifecycleState.paused:
         BlocProvider.of<UserCubit>(
           context,
-        ).updateUser(user: UserEntity(uid: widget.uid, isOnline: false));
+        ).updateUser(user: UserEntity(userId: widget.userId, isOnline: false));
         break;
       case AppLifecycleState.hidden:
         break;
@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage>
                             Navigator.pushNamed(
                               context,
                               PageConst.settingsPage,
-                              arguments: widget.uid,
+                              arguments: widget.userId,
                             );
                           },
                           child: const Text("Settings"),
@@ -136,8 +136,8 @@ class _HomePageState extends State<HomePage>
       body: TabBarView(
         controller: _tabController,
         children: [
-          ChatPage(uid: widget.uid),
-          StatusPage(userId: widget.uid),
+          ChatPage(userId: widget.userId),
+          StatusPage(userId: widget.userId),
           CallHistoryPage(),
         ],
       ),
@@ -157,7 +157,7 @@ class _HomePageState extends State<HomePage>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ContactPage(uid: widget.uid),
+                  builder: (context) => ContactPage(userId: widget.userId),
                 ),
               );
             },

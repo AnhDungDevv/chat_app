@@ -1,10 +1,16 @@
+import 'package:chat_application/features/app/home/home_page.dart';
+import 'package:chat_application/features/status/domain/entities/status_enity.dart';
+import 'package:chat_application/features/status/presentation/cubit/status/status_cubit.dart';
+import 'package:chat_application/features/status/presentation/widgets/delete_status_update_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 
 import 'package:chat_application/features/app/global/widgets/prodile_widget.dart';
 
 class MyStatusPage extends StatefulWidget {
-  const MyStatusPage({super.key});
+  final StatusEntity status;
+  const MyStatusPage({super.key, required this.status});
 
   @override
   State<MyStatusPage> createState() => _MyStatusPageState();
@@ -29,16 +35,20 @@ class _MyStatusPageState extends State<MyStatusPage> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(30),
-                    child: profileWidget(),
+                    child: profileWidget(imageUrl: widget.status.imageUrl),
                   ),
                 ),
                 const SizedBox(width: 15),
                 Expanded(
                   child: Text(
                     GetTimeAgo.parse(
-                      DateTime.now().subtract(
+                      widget.status.createdAt!.subtract(
                         Duration(seconds: DateTime.now().second),
                       ),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -48,7 +58,31 @@ class _MyStatusPageState extends State<MyStatusPage> {
                         PopupMenuItem(
                           value: "Delete",
                           child: GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              deleteStatusUpdate(
+                                context,
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  BlocProvider.of<StatusCubit>(
+                                    context,
+                                  ).deleteStatus(
+                                    status: StatusEntity(
+                                      statusId: widget.status.statusId,
+                                    ),
+                                  );
+                                },
+                              );
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (_) => HomePage(
+                                        userId: widget.status.userId!,
+                                        index: 1,
+                                      ),
+                                ),
+                              );
+                            },
                             child: const Text("Delete"),
                           ),
                         ),

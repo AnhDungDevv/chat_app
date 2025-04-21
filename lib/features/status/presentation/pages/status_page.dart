@@ -219,7 +219,7 @@ class _StatusPageState extends State<StatusPage> {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => HomePage(uid: widget.userId!, index: 1),
+                    builder: (_) => HomePage(userId: widget.userId!, index: 1),
                   ),
                 );
               });
@@ -242,7 +242,7 @@ class _StatusPageState extends State<StatusPage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) {
-                      return HomePage(uid: widget.userId, index: 1);
+                      return HomePage(userId: widget.userId, index: 1);
                     },
                   ),
                 );
@@ -268,7 +268,10 @@ class _StatusPageState extends State<StatusPage> {
           return BlocBuilder<StatusCubit, StatusState>(
             builder: (context, state) {
               if (state is StatusLoaded) {
-                final statuses = state.statuses;
+                final statuses =
+                    state.statuses
+                        .where((item) => item.userId != widget.userId)
+                        .toList();
                 log("status --- init $statuses");
                 if (_stories.isEmpty) {
                   return _buildBodyWidget(statuses, currentUser);
@@ -411,7 +414,11 @@ class _StatusPageState extends State<StatusPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, PageConst.myStatusPage);
+                    Navigator.pushNamed(
+                      context,
+                      PageConst.myStatusPage,
+                      arguments: myStatus,
+                    );
                   },
                   child: Icon(
                     Icons.more_horiz,

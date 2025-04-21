@@ -11,8 +11,8 @@ import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ChatPage extends StatefulWidget {
-  final String uid;
-  const ChatPage({super.key, required this.uid});
+  final String userId;
+  const ChatPage({super.key, required this.userId});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -23,7 +23,7 @@ class _ChatPageState extends State<ChatPage> {
   void initState() {
     super.initState();
     context.read<ChatCubit>().getMyChats(
-      chat: ChatEntity(senderId: widget.uid),
+      chat: ChatEntity(senderId: widget.userId),
     );
   }
 

@@ -53,6 +53,7 @@ class StatusRemoteDataSourceImpl implements StatusRemoteDataSource {
   /// Delete status and associated stories
   @override
   Future<void> deleteStatus(StatusEntity status) async {
+    print("status $status");
     try {
       await supabase
           .from('status_image')

@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ContactPage extends StatefulWidget {
-  final String uid;
-  const ContactPage({super.key, required this.uid});
+  final String userId;
+  const ContactPage({super.key, required this.userId});
 
   @override
   State<ContactPage> createState() => _ContactPageState();
@@ -24,7 +24,7 @@ class _ContactPageState extends State<ContactPage> {
     BlocProvider.of<UserCubit>(context).getAllUsers();
     BlocProvider.of<GetSingleUserCubit>(
       context,
-    ).getSingleUser(userId: widget.uid);
+    ).getSingleUser(userId: widget.userId);
     super.initState();
   }
 
@@ -42,7 +42,7 @@ class _ContactPageState extends State<ContactPage> {
                 if (state is UserLoaded) {
                   final contacts =
                       state.users
-                          .where((user) => user.userId != widget.uid)
+                          .where((user) => user.userId != widget.userId)
                           .toList();
                   if (contacts.isEmpty) {
                     return const Center(child: Text("No contacts Yets"));
@@ -57,8 +57,8 @@ class _ContactPageState extends State<ContactPage> {
                             context,
                             PageConst.singleChatPage,
                             arguments: ChatEntity(
-                              senderId: currentUser.uid,
-                              recipientId: currentUser.uid,
+                              senderId: currentUser.userId,
+                              recipientId: currentUser.userId,
                               senderName: currentUser.username,
                               recipientName: currentUser.username,
                               senderProfile: currentUser.profileUrl,
