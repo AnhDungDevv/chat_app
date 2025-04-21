@@ -1,10 +1,16 @@
-import 'package:equatable/equatable.dart';
+abstract class AgoraState {}
 
-abstract class AgoraState extends Equatable {
-  const AgoraState();
+class AgoraInitial extends AgoraState {}
+
+class AgoraInitializing extends AgoraState {}
+
+class AgoraJoined extends AgoraState {}
+
+class AgoraRemoteJoined extends AgoraState {
+  final int uid;
+  AgoraRemoteJoined(this.uid);
 }
 
-class AgoraInitial extends AgoraState {
-  @override
-  List<Object> get props => [];
-}
+class AgoraRemoteLeft extends AgoraState {}
+
+class AgoraLeft extends AgoraState {}
